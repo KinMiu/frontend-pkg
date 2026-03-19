@@ -282,7 +282,7 @@ const About = () => {
         {/* Team Members */}
         <div className="mx-auto mt-20 max-w-7xl">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center">
-            Struktur KSP<br className="sm:hidden" /> Kecamatan Barat
+            Struktur Organisasi<br className="sm:hidden" /> Kecamatan Barat
           </h2>
           
 

@@ -63,6 +63,7 @@ const Dosen: React.FC = () => {
     return searchTerm === '' ||
       f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (f.nuptk && f.nuptk.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      ((f as any).nik && (f as any).nik.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (f.nip && f.nip.toLowerCase().includes(searchTerm.toLowerCase()));
   });
 
@@ -94,7 +95,7 @@ const Dosen: React.FC = () => {
       <div className="px-5 mb-8 max-w-4xl mx-auto flex flex-col md:flex-row gap-4 justify-center items-center">
         <input
           type="text"
-          placeholder="Cari nama, NUPTK, NIP..."
+          placeholder="Cari nama, NUPTK/NIK, NIP..."
           className="border border-gray-300 rounded px-4 py-2 w-full md:w-1/2"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

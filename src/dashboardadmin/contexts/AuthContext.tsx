@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<string | false>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
+  changeAdminUsername: (currentPassword: string, newUsername: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -116,13 +117,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   };
 
+  const changeAdminUsername = async (currentPassword: string, newUsername: string): Promise<boolean> => {
+    const u = user as (User & { role?: string }) | null;
+    if (!u) return false;
+    if (u.role !== 'admin') return false;
+
+    const username = (u.username || '').trim();
+    const nextUsername = newUsername.trim();
+    if (!username || !nextUsername || !currentPassword) return false;
+
+    try {
+      await authAPI.changeAdminUsername(username, currentPassword, nextUsername);
+      // Update local session data so admin UI (and next login) uses new username
+      setUser({ username: nextUsername, role: 'admin' });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, changePassword, logout }}>
+    <AuthContext.Provider value={{ user, login, changePassword, changeAdminUsername, logout }}>
       {children}
     </AuthContext.Provider>
   );

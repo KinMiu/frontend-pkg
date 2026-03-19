@@ -226,7 +226,7 @@ export default function HeroSection() {
             >
               <input
                 type="text"
-                placeholder="Nama / NUPTK Guru"
+                  placeholder="Nama / NUPTK/NIK Guru"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCariDosen()}
@@ -286,7 +286,7 @@ export default function HeroSection() {
                     <tr>
                       <th className="px-4 py-2 font-semibold text-gray-700">No</th>
                       <th className="px-4 py-2 font-semibold text-gray-700">Nama</th>
-                      <th className="px-4 py-2 font-semibold text-gray-700">NUPTK</th>
+                      <th className="px-4 py-2 font-semibold text-gray-700">NUPTK/NIK</th>
                       <th className="px-4 py-2 font-semibold text-gray-700">SATMINKAL</th>
                       <th className="px-4 py-2 font-semibold text-gray-700 text-center">Aksi</th>
                     </tr>
@@ -296,7 +296,7 @@ export default function HeroSection() {
                       <tr key={guru._id} className="hover:bg-gray-50">
                         <td className="px-4 py-2 text-gray-700">{idx + 1}</td>
                         <td className="px-4 py-2 text-gray-900 font-medium">{guru.name}</td>
-                        <td className="px-4 py-2 text-gray-700">{guru.nuptk || "-"}</td>
+                        <td className="px-4 py-2 text-gray-700">{guru.nuptk || (guru as any).nik || "-"}</td>
                         <td className="px-4 py-2 text-gray-700">{guru.satminkal || "-"}</td>
                         <td className="px-4 py-2 text-center">
                           <button

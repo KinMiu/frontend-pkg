@@ -130,6 +130,14 @@ export const authAPI = {
     return response.data;
   },
 
+  changeAdminUsername: async (username: string, currentPassword: string, newUsername: string) => {
+    const response = await fetchAPI<APIResponse<{ username: string }>>('/api/auth/admin/change-username', {
+      method: 'POST',
+      body: JSON.stringify({ username, currentPassword, newUsername }),
+    });
+    return response.data;
+  },
+
   loginDosen: async (nuptk: string, password: string) => {
     const response = await fetchAPI<
       APIResponse<{

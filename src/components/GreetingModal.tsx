@@ -96,7 +96,7 @@ const GreetingModal: React.FC<Props> = ({ open, onClose, greeting }) => {
 
               {/* Right panel */}
               <div className="flex min-h-0 flex-1 flex-col">
-                <div className="px-6 pt-8 md:px-8">
+                <div className="hidden px-6 pt-8 md:block md:px-8">
                   <div className="flex items-start gap-3">
                     <div className="mt-1 rounded-lg bg-indigo-50 p-2 text-indigo-700 ring-1 ring-indigo-100">
                       <Quote className="h-5 w-5" />
@@ -112,7 +112,23 @@ const GreetingModal: React.FC<Props> = ({ open, onClose, greeting }) => {
                   </div>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-6 md:px-8">
+                <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-8 md:pt-6 md:px-8">
+                  <div className="md:hidden">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 rounded-lg bg-indigo-50 p-2 text-indigo-700 ring-1 ring-indigo-100">
+                        <Quote className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold tracking-tight text-slate-900">
+                          Selamat Datang
+                        </h2>
+                        <p className="mt-1 text-sm text-slate-600">
+                          Terima kasih telah berkunjung. Berikut kata pengantar singkat dari kami.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="rounded-xl border border-slate-100 bg-gradient-to-b from-slate-50 to-white p-5">
                     <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
                       {greeting.kataSambutan}

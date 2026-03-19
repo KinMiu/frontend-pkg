@@ -202,10 +202,10 @@ const FacultyDetail: React.FC<FacultyDetailProps> = ({ facultyIdOverride, basePa
                     <p className="text-gray-900">{faculty.jenisKelamin}</p>
                   </div>
                 )}
-                {faculty.nuptk && (
+                {(faculty.nuptk || (faculty as { nik?: string }).nik) && (
                   <div>
-                    <p className="text-sm font-medium text-gray-500">NUPTK</p>
-                    <p className="text-gray-900">{faculty.nuptk}</p>
+                    <p className="text-sm font-medium text-gray-500">NUPTK/NIK</p>
+                    <p className="text-gray-900">{faculty.nuptk || (faculty as { nik?: string }).nik}</p>
                   </div>
                 )}
                 {faculty.nip && (

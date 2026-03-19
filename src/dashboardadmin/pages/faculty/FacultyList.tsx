@@ -205,7 +205,7 @@ const FacultyList: React.FC = () => {
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Cari nama, NUPTK, atau NIP..."
+                placeholder="Cari nama, NUPTK/NIK, atau NIP..."
                 className="h-10 w-full rounded-md border border-gray-300 pl-10 pr-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -347,7 +347,7 @@ const FacultyList: React.FC = () => {
                           <th className="px-3 py-2 text-left font-medium text-gray-600">#</th>
                           <th className="px-3 py-2 text-left font-medium text-gray-600">Nama Lengkap</th>
                           <th className="px-3 py-2 text-left font-medium text-gray-600">Jenis Kelamin</th>
-                          <th className="px-3 py-2 text-left font-medium text-gray-600">NUPTK</th>
+                          <th className="px-3 py-2 text-left font-medium text-gray-600">NUPTK/NIK</th>
                           <th className="px-3 py-2 text-left font-medium text-gray-600">NIP</th>
                           <th className="px-3 py-2 text-left font-medium text-gray-600">NRG</th>
                           <th className="px-3 py-2 text-left font-medium text-gray-600">SATMINKAL</th>
@@ -364,7 +364,7 @@ const FacultyList: React.FC = () => {
                               {row['Jenis Kelamin'] || row['jenis_kelamin'] || row['jenisKelamin'] || '-'}
                             </td>
                             <td className="px-3 py-1.5">
-                              {row['NUPTK'] || row['nuptk'] || '-'}
+                              {row['NUPTK'] || row['nuptk'] || row['NIK'] || row['nik'] || '-'}
                             </td>
                             <td className="px-3 py-1.5">
                               {row['NIP'] || row['nip'] || '-'}
@@ -423,7 +423,7 @@ const FacultyList: React.FC = () => {
                   Nama
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  NUPTK
+                  NUPTK/NIK
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Posisi
@@ -479,7 +479,9 @@ const FacultyList: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{faculty.nuptk || '-'}</td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {faculty.nuptk || (faculty as { nik?: string }).nik || '-'}
+                    </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{faculty.position || 'Guru'}</td>
                     <td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium">
                       <div className="flex justify-center space-x-3">

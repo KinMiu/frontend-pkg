@@ -222,7 +222,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
     const newErrors: Record<string, string> = {};
 
     if (!facultyData.name.trim()) newErrors.name = 'Nama wajib diisi';
-    if (!facultyData.nuptk?.trim()) newErrors.nuptk = 'NUPTK wajib diisi';
+    if (!facultyData.nuptk?.trim()) newErrors.nuptk = 'NUPTK/NIK wajib diisi';
 
     if (!(facultyData.satminkal || '').trim()) {
       newErrors.satminkal = 'SATMINKAL wajib diisi';
@@ -512,7 +512,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
                 </div>
                 <div>
                   <label htmlFor="nuptk" className="block text-sm font-medium text-gray-700">
-                    NUPTK <span className="text-red-500">*</span>
+                    NUPTK/NIK <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
