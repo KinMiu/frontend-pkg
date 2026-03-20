@@ -182,7 +182,7 @@ const Home = () => {
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='Informatika - UBL'
+              attribution='PKG Kecamatan Barat'
             />
             <Marker position={[-7.5624231,111.4550711]} icon={customIcon}>
               <Popup>
