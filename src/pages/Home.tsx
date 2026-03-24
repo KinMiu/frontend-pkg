@@ -404,7 +404,7 @@ const Home = () => {
       <LecturerSlider />
 
       {/* Partners */}
-      <Partners partners={partners} />
+      <Partners />
 
       {/* Testimonials */}
       {/* <TestimonialSlider testimonials={testimonials} /> */}

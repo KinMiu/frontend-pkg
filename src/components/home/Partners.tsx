@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { partnerAPI } from '../../services/api';
 import { Partner } from '../../types';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 export default function Partners() {
   const [partners, setPartners] = useState<Partner[]>([]);
-  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,9 +27,6 @@ export default function Partners() {
 
     fetchPartners();
   }, []);
-
-  // Tampilkan hanya 4 pertama jika tidak dalam mode "show all"
-  const visiblePartners = showAll ? partners : partners.slice(0, 4);
 
   if (loading) {
     return (
@@ -54,9 +54,21 @@ export default function Partners() {
         PKG Kecamatan Barat  telah melakukan kerjasama dengan berbagai instansi terkait
       </p>
 
-      {/* Grid untuk menampilkan partner */}
-      <div className="w-full max-w-5xl flex flex-wrap justify-center gap-8">
-        {visiblePartners.map((partner) => {
+      <div className="w-full max-w-6xl">
+        <Swiper
+          modules={[Autoplay, Pagination]}
+          spaceBetween={20}
+          slidesPerView={1}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          loop={partners.length > 3}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          className="pb-10"
+        >
+          {partners.map((partner) => {
           const link = partner.link?.trim();
           const cardContent = (
             <>
@@ -86,34 +98,30 @@ export default function Partners() {
               </span>
             </>
           );
-          const cardClass = 'flex items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 w-full max-w-[300px]';
-          return link ? (
-            <a
-              key={partner._id}
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${cardClass} cursor-pointer hover:ring-2 hover:ring-blue-500/50`}
-            >
-              {cardContent}
-            </a>
-          ) : (
-            <div key={partner._id} className={cardClass}>
-              {cardContent}
-            </div>
+          const cardClass = 'flex h-full min-h-[120px] items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 w-full';
+          return (
+            <SwiperSlide key={partner._id}>
+              <div className="h-full px-2">
+                {link ? (
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${cardClass} cursor-pointer hover:ring-2 hover:ring-blue-500/50`}
+                  >
+                    {cardContent}
+                  </a>
+                ) : (
+                  <div className={cardClass}>
+                    {cardContent}
+                  </div>
+                )}
+              </div>
+            </SwiperSlide>
           );
         })}
+        </Swiper>
       </div>
-
-      {/* Tombol "Lihat Selengkapnya" */}
-      {partners.length > 4 && (
-        <button
-          onClick={() => setShowAll(!showAll)}
-          className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-        >
-          {showAll ? 'Tampilkan Lebih Sedikit' : 'Lihat Selengkapnya'}
-        </button>
-      )}
     </div>
   );
 }

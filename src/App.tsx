@@ -22,6 +22,7 @@ import GaleryKegiatan from './pages/GaleryKegiatan';
 import KegiatanK3sp from './pages/KegiatanK3sp';
 import Surat from './pages/Surat';
 import PerangkatAjar from './pages/PerangkatAjar';
+import DigitalDevelopment from './pages/DigitalDevelopment';
 
 function AppContent() {
   const location = useLocation();
@@ -45,6 +46,8 @@ function AppContent() {
           <Route path="/pengumuman" element={<Pengumuman />} />
           <Route path="/surat" element={<Surat />} />
           <Route path="/perangkat-ajar" element={<PerangkatAjar />} />
+          <Route path="/digital/e-learning" element={<DigitalDevelopment title="E-Learning" />} />
+          <Route path="/digital/cbt-online" element={<DigitalDevelopment title="CBT Online" />} />
           <Route path="/prestasi" element={<Prestasi />} />
           <Route path="/beasiswa" element={<Beasiswa />} />
           <Route path="/hki" element={<HKI />} />

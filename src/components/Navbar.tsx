@@ -7,6 +7,13 @@ const navigation = [
   { name: "Tentang Kami", href: "/tentang" },
   { name: "Guru", href: "/guru" },
   {
+    name: "Digital",
+    submenu: [
+      { name: "E-Learning", href: "/digital/e-learning" },
+      { name: "CBT Online", href: "/digital/cbt-online" },
+    ],
+  },
+  {
     name: "Kegiatan",
     submenu: [
       { name: "Program Kegiatan", href: "/program" },
@@ -14,15 +21,14 @@ const navigation = [
       { name: "Kegiatan K3SP", href: "/kegiatan/k3sp" },
     ],
   },
-  { name: "Pengumuman", href: "/pengumuman" },
   {
     name: "Dokumen",
     submenu: [
+      { name: "Pengumuman", href: "/pengumuman" },
       { name: "Perangkat Ajar", href: "/perangkat-ajar" },
       { name: "Dokumen Surat", href: "/surat" },
     ],
   },
- 
   { name: "Prestasi", href: "/prestasi" },
 ];
 

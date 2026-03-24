@@ -120,9 +120,19 @@ const PengumumanForm: React.FC = () => {
         maxHeight: 1200,
         quality: 0.8,
       });
+      if (compressed.size > 5 * 1024 * 1024) {
+        toast.error('Ukuran gambar setelah kompres masih di atas 5MB');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
       setSelectedFile(compressed);
       setImagePreview(URL.createObjectURL(compressed));
     } catch {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Ukuran gambar maksimal 5MB');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
       setSelectedFile(file);
       setImagePreview(URL.createObjectURL(file));
     }

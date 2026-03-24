@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Calendar, MapPin } from 'lucide-react';
+import { X, Calendar, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Event } from '../types';
+import { createPortal } from 'react-dom';
 
 interface KegiatanDetailProps {
   kegiatan: Event;
@@ -11,20 +12,51 @@ interface KegiatanDetailProps {
 interface ImageViewerProps {
   src: string;
   alt: string;
+  hasMultiple: boolean;
+  onPrev: () => void;
+  onNext: () => void;
   onClose: () => void;
 }
 
-const ImageViewer: React.FC<ImageViewerProps> = ({ src, alt, onClose }) => (
+const ImageViewer: React.FC<ImageViewerProps> = ({ src, alt, hasMultiple, onPrev, onNext, onClose }) => (
   <div
-    className="fixed inset-0 bg-black/90 flex items-center justify-center z-[1000] p-4"
+    className="fixed inset-0 bg-black/90 flex items-center justify-center z-[1100] p-4"
     onClick={onClose}
   >
+    {hasMultiple && (
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onPrev();
+        }}
+        className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow text-gray-700 hover:bg-white"
+        aria-label="Gambar sebelumnya"
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </button>
+    )}
     <button
-      onClick={onClose}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
       className="absolute top-4 right-4 rounded-full bg-white/90 p-2 shadow text-gray-700 hover:bg-white"
+      aria-label="Tutup viewer"
     >
       <X className="h-5 w-5" />
     </button>
+    {hasMultiple && (
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onNext();
+        }}
+        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow text-gray-700 hover:bg-white"
+        aria-label="Gambar berikutnya"
+      >
+        <ChevronRight className="h-6 w-6" />
+      </button>
+    )}
     <img
       src={src}
       alt={alt}
@@ -35,7 +67,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ src, alt, onClose }) => (
 );
 
 const KegiatanDetail: React.FC<KegiatanDetailProps> = ({ kegiatan, onClose }) => {
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [imageIndex, setImageIndex] = useState<number | null>(null);
 
   const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '');
   const fotos = (Array.isArray(kegiatan.fotos) && kegiatan.fotos.length > 0)
@@ -47,9 +79,26 @@ const KegiatanDetail: React.FC<KegiatanDetailProps> = ({ kegiatan, onClose }) =>
     )
     .filter(Boolean);
   const src = resolvedFotos[0] || '';
+  const viewerSrc = imageIndex !== null ? resolvedFotos[imageIndex] : null;
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+  const showPrevImage = () => {
+    if (resolvedFotos.length <= 1 || imageIndex === null) return;
+    setImageIndex((prev) => {
+      if (prev === null) return 0;
+      return (prev - 1 + resolvedFotos.length) % resolvedFotos.length;
+    });
+  };
+
+  const showNextImage = () => {
+    if (resolvedFotos.length <= 1 || imageIndex === null) return;
+    setImageIndex((prev) => {
+      if (prev === null) return 0;
+      return (prev + 1) % resolvedFotos.length;
+    });
+  };
+
+  return createPortal(
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[1050]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,7 +112,7 @@ const KegiatanDetail: React.FC<KegiatanDetailProps> = ({ kegiatan, onClose }) =>
               src={src}
               alt={kegiatan.nama}
               className="w-full h-full object-cover rounded-t-2xl cursor-pointer"
-              onClick={() => setImageSrc(src)}
+              onClick={() => setImageIndex(0)}
             />
           ) : (
             <div className="w-full h-full bg-gray-200 rounded-t-2xl" />
@@ -128,7 +177,7 @@ const KegiatanDetail: React.FC<KegiatanDetailProps> = ({ kegiatan, onClose }) =>
                   <button
                     key={u}
                     type="button"
-                    onClick={() => setImageSrc(u)}
+                    onClick={() => setImageIndex(idx)}
                     className="aspect-square overflow-hidden rounded-md border border-gray-200 hover:border-blue-400"
                     aria-label={`Buka foto ${idx + 1}`}
                   >
@@ -195,10 +244,18 @@ const KegiatanDetail: React.FC<KegiatanDetailProps> = ({ kegiatan, onClose }) =>
           )}
         </div>
       </motion.div>
-      {imageSrc && (
-        <ImageViewer src={imageSrc} alt={kegiatan.nama} onClose={() => setImageSrc(null)} />
+      {viewerSrc && (
+        <ImageViewer
+          src={viewerSrc}
+          alt={kegiatan.nama}
+          hasMultiple={resolvedFotos.length > 1}
+          onPrev={showPrevImage}
+          onNext={showNextImage}
+          onClose={() => setImageIndex(null)}
+        />
       )}
-    </div>
+    </div>,
+    document.body
   );
 };
 
