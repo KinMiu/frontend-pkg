@@ -38,11 +38,12 @@ const PengumumanDetailModal: React.FC<PengumumanDetailProps> = ({ pengumuman, on
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '');
+  const thumb = (pengumuman.fotos && pengumuman.fotos[0]) || pengumuman.foto;
   const src =
-    pengumuman.foto && (pengumuman.foto.startsWith('http') || pengumuman.foto.startsWith('data:'))
-      ? pengumuman.foto
-      : pengumuman.foto
-        ? `${baseUrl}/uploads/${pengumuman.foto}`
+    thumb && (thumb.startsWith('http') || thumb.startsWith('data:'))
+      ? thumb
+      : thumb
+        ? `${baseUrl}/uploads/${thumb}`
         : '';
 
   return (

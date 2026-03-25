@@ -14,6 +14,7 @@ const emptyPengumuman: Pengumuman = {
   _id: '',
   judul: '',
   foto: '',
+  fotos: [],
   deskripsi: '',
   tanggal: '',
   lokasi: '',
@@ -32,8 +33,9 @@ const PengumumanForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [localPreviews, setLocalPreviews] = useState<string[]>([]);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [satminkalOptions, setSatminkalOptions] = useState<string[]>([]);
   const [showSatminkalSuggestions, setShowSatminkalSuggestions] = useState(false);
 
@@ -72,14 +74,19 @@ const PengumumanForm: React.FC = () => {
             }
             setData({
               ...existing,
+              fotos: existing.fotos ?? [],
               satminkal: isOperator ? operatorSatminkal : (existing.satminkal ?? ''),
             });
-            if (existing.foto) {
+            const firstFoto =
+              (existing.fotos && existing.fotos.length > 0)
+                ? existing.fotos[0]
+                : existing.foto;
+            if (firstFoto) {
               const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '');
               const src =
-                existing.foto.startsWith('http') || existing.foto.startsWith('data:')
-                  ? existing.foto
-                  : `${baseUrl}/uploads/${existing.foto}`;
+                firstFoto.startsWith('http') || firstFoto.startsWith('data:')
+                  ? firstFoto
+                  : `${baseUrl}/uploads/${firstFoto}`;
               setImagePreview(src);
             }
             const dateParts = existing.tanggal.split(' ');
@@ -107,36 +114,57 @@ const PengumumanForm: React.FC = () => {
     fetchData();
   }, [id, getPengumumanById, navigate, isEditing, isOperator, operatorSatminkal]);
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error('File harus berupa gambar');
+  const handleImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    if (files.length > 30) {
+      toast.error('Maksimal 30 gambar');
+      e.target.value = '';
       return;
     }
+
+    for (const f of files) {
+      if (!f.type.startsWith('image/')) {
+        toast.error('Semua file harus berupa gambar');
+        e.target.value = '';
+        return;
+      }
+    }
+
     try {
-      const compressed = await compressImageFile(file, {
-        maxWidth: 1200,
-        maxHeight: 1200,
-        quality: 0.8,
+      const compressedFiles: File[] = [];
+      for (const f of files) {
+        try {
+          const compressed = await compressImageFile(f, {
+            maxWidth: 1600,
+            maxHeight: 1600,
+            quality: 0.8,
+          });
+          compressedFiles.push(compressed);
+        } catch {
+          compressedFiles.push(f);
+        }
+      }
+      const previews = compressedFiles.map((f) => URL.createObjectURL(f));
+      setSelectedFiles(compressedFiles);
+      setLocalPreviews(previews);
+      setImagePreview(previews[0] || '');
+      setErrors((prev) => {
+        const n = { ...prev };
+        delete n.foto;
+        return n;
       });
-      if (compressed.size > 5 * 1024 * 1024) {
-        toast.error('Ukuran gambar setelah kompres masih di atas 5MB');
-        if (fileInputRef.current) fileInputRef.current.value = '';
-        return;
-      }
-      setSelectedFile(compressed);
-      setImagePreview(URL.createObjectURL(compressed));
-    } catch {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Ukuran gambar maksimal 5MB');
-        if (fileInputRef.current) fileInputRef.current.value = '';
-        return;
-      }
-      setSelectedFile(file);
-      setImagePreview(URL.createObjectURL(file));
+    } finally {
+      e.target.value = '';
     }
   };
+
+  useEffect(() => {
+    return () => {
+      localPreviews.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, [localPreviews]);
 
   const formatDate = (date: Date): string => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -149,6 +177,16 @@ const PengumumanForm: React.FC = () => {
     if (!selectedDate) newErrors.tanggal = 'Tanggal wajib diisi';
     if (!data.deskripsi.trim()) newErrors.deskripsi = 'Deskripsi wajib diisi';
     if (!data.jenis.trim()) newErrors.jenis = 'Jenis pengumuman wajib diisi';
+
+    const hasExistingPhotos = Array.isArray(data.fotos) ? data.fotos.length > 0 : !!(data.foto || '').trim();
+    const hasNewPhotos = selectedFiles.length > 0;
+    if (!hasExistingPhotos && !hasNewPhotos) {
+      newErrors.foto = 'Foto pengumuman wajib diupload (minimal 1, maksimal 30)';
+    }
+    if (hasNewPhotos && selectedFiles.length > 30) {
+      newErrors.foto = 'Maksimal 30 gambar';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -185,8 +223,14 @@ const PengumumanForm: React.FC = () => {
       formData.append('lokasi', data.lokasi ?? '');
       formData.append('jenis', data.jenis);
       formData.append('deskripsi', data.deskripsi);
-      if (data.satminkal?.trim()) formData.append('satminkal', data.satminkal.trim());
-      if (selectedFile) formData.append('foto', selectedFile);
+      const sat = data.satminkal?.trim() ?? '';
+      if (sat) formData.append('satminkal', sat);
+
+      if (selectedFiles.length > 0) {
+        selectedFiles.slice(0, 30).forEach((f) => {
+          formData.append('foto', f);
+        });
+      }
 
       if (isEditing && id) {
         await updatePengumuman(id, formData);
@@ -220,25 +264,64 @@ const PengumumanForm: React.FC = () => {
                 <div className="shrink-0">
                   <div className="relative h-48 w-48">
                     {imagePreview ? (
-                      <img className="h-48 w-48 object-cover rounded-lg" src={imagePreview} alt="Preview" />
+                      <img
+                        className="h-48 w-48 rounded-lg object-cover"
+                        src={imagePreview}
+                        alt="Prakiraan foto pengumuman"
+                      />
                     ) : (
-                      <div className="h-48 w-48 rounded-lg bg-gray-200 flex items-center justify-center">
+                      <div className="flex h-48 w-48 items-center justify-center rounded-lg bg-gray-200">
                         <Upload className="h-12 w-12 text-gray-400" />
                       </div>
                     )}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Foto Pengumuman</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Foto Pengumuman <span className="text-red-500">*</span>
+                  </label>
                   <div className="mt-1 flex items-center">
-                    <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
-                    <button type="button" onClick={() => fileInputRef.current?.click()} className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                      Pilih Foto
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImagesChange}
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      Pilih Foto (maks 30)
                     </button>
                   </div>
-                  <p className="mt-2 text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                  <p className="mt-2 text-xs text-gray-500">PNG, JPG, GIF hingga 5MB per file</p>
+                  {errors.foto && <p className="mt-1 text-sm text-red-600">{errors.foto}</p>}
+                  {selectedFiles.length > 0 && (
+                    <p className="mt-1 text-xs text-gray-600">
+                      Dipilih: <span className="font-medium">{selectedFiles.length}</span> gambar
+                    </p>
+                  )}
                 </div>
               </div>
+
+              {localPreviews.length > 1 && (
+                <div className="mt-4 grid grid-cols-5 gap-2">
+                  {localPreviews.slice(0, 30).map((src, idx) => (
+                    <button
+                      key={src}
+                      type="button"
+                      className="relative aspect-square overflow-hidden rounded-md border border-gray-200 hover:border-indigo-400"
+                      onClick={() => setImagePreview(src)}
+                      title={`Foto ${idx + 1}`}
+                    >
+                      <img src={src} alt={`Preview ${idx + 1}`} className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>

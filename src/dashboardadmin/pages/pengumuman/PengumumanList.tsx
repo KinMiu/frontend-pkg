@@ -74,7 +74,9 @@ const PengumumanList: React.FC = () => {
 
       {filteredList.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredList.map((item) => (
+          {filteredList.map((item) => {
+            const thumb = (item.fotos && item.fotos[0]) || item.foto;
+            return (
             <div
               key={item._id}
               className="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg"
@@ -83,10 +85,10 @@ const PengumumanList: React.FC = () => {
                 className="h-48 w-full bg-cover bg-center"
                 style={{
                   backgroundImage: `url(${
-                    item.foto
-                      ? item.foto.startsWith('http') || item.foto.startsWith('data:')
-                        ? item.foto
-                        : `${(import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '')}/uploads/${item.foto}`
+                    thumb
+                      ? thumb.startsWith('http') || thumb.startsWith('data:')
+                        ? thumb
+                        : `${(import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '')}/uploads/${thumb}`
                       : 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg'
                   })`,
                 }}
@@ -131,7 +133,8 @@ const PengumumanList: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       ) : (
         <div className="rounded-lg bg-white p-8 text-center shadow-md">

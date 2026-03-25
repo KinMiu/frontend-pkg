@@ -35,7 +35,8 @@ export default function LatestAnnouncementsMarquee({ items, className }: Props) 
   const durationSeconds = Math.max(35, marqueeItems.length * 4.5);
 
   const cards = marqueeItems.map((item, idx) => {
-    const src = buildImageSrc(item.foto);
+    const thumb = (item.fotos && item.fotos[0]) || item.foto;
+    const src = buildImageSrc(thumb);
     return (
       <button
         key={`${item._id}-${idx}`}

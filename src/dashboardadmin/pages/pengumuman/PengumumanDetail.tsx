@@ -61,6 +61,14 @@ const PengumumanDetail: React.FC = () => {
     );
   }
 
+  const heroFoto = (item.fotos && item.fotos[0]) || item.foto;
+  const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '');
+  const heroSrc = heroFoto
+    ? heroFoto.startsWith('http') || heroFoto.startsWith('data:')
+      ? heroFoto
+      : `${baseUrl}/uploads/${heroFoto}`
+    : 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg';
+
   const handleDelete = async () => {
     if (window.confirm(`Anda yakin ingin menghapus pengumuman "${item.judul}"?`)) {
       try {
@@ -98,13 +106,7 @@ const PengumumanDetail: React.FC = () => {
       <div className="overflow-hidden rounded-lg bg-white shadow-md">
         <div className="relative h-64 w-full">
           <img
-            src={
-              item.foto
-                ? item.foto.startsWith('http') || item.foto.startsWith('data:')
-                  ? item.foto
-                  : `${(import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '')}/uploads/${item.foto}`
-                : 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg'
-            }
+            src={heroSrc}
             alt={item.judul}
             className="h-full w-full object-cover"
           />

@@ -70,6 +70,7 @@ export interface Pengumuman {
   _id: string;
   judul: string;
   foto: string;
+  fotos?: string[];
   deskripsi: string;
   tanggal: string;
   lokasi?: string;

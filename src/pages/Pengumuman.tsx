@@ -57,11 +57,12 @@ const Pengumuman = () => {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {sortedPengumuman.map((item) => {
               const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '');
+              const thumb = (item.fotos && item.fotos[0]) || item.foto;
               const src =
-                item.foto && (item.foto.startsWith('http') || item.foto.startsWith('data:'))
-                  ? item.foto
-                  : item.foto
-                    ? `${baseUrl}/uploads/${item.foto}`
+                thumb && (thumb.startsWith('http') || thumb.startsWith('data:'))
+                  ? thumb
+                  : thumb
+                    ? `${baseUrl}/uploads/${thumb}`
                     : '';
               return (
                 <div
