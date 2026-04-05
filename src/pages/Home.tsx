@@ -9,6 +9,7 @@ import Programs from '../components/home/Programs';
 import LecturerSlider from "../components/home/LecturerSlider";
 import TestimonialSlider from '../components/home/TestimonialSlider';
 import Partners from '../components/home/Partners';
+import HomeFeaturedVideos from '../components/home/HomeFeaturedVideos';
 import LatestAnnouncementsMarquee from '../components/home/LatestAnnouncementsMarquee';
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -402,6 +403,9 @@ const Home = () => {
 
       {/* Lecturer Slider */}
       <LecturerSlider />
+
+      {/* Video YouTube (di atas kolaborasi) */}
+      <HomeFeaturedVideos />
 
       {/* Partners */}
       <Partners />

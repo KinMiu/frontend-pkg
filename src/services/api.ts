@@ -16,6 +16,7 @@ import {
   Banner,
   Program,
   Structural,
+  FeaturedVideo,
 } from '../types';
 
 // API response types
@@ -145,6 +146,7 @@ export const authAPI = {
         nuptk: string;
         nidn?: string;
         name: string;
+        position: string;
         hasCustomPassword: boolean;
       }>
     >('/api/auth/dosen/login', {
@@ -646,6 +648,54 @@ export const partnerAPI = {
   delete: async (_id: string) => {
     if (!_id) throw new Error('Partner ID is required');
     await fetchAPI<APIResponse<void>>(`/api/partners/${_id}`, { method: 'DELETE' });
+  },
+};
+
+// -------- Featured video (YouTube) API --------
+export const featuredVideoAPI = {
+  getAll: async () => {
+    try {
+      const response = await fetchAPI<APIResponse<FeaturedVideo[]>>('/api/featured-videos');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching featured videos:', error);
+      return [];
+    }
+  },
+
+  getById: async (_id: string) => {
+    if (!_id) throw new Error('Featured video ID is required');
+    try {
+      const response = await fetchAPI<APIResponse<FeaturedVideo>>(`/api/featured-videos/${_id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching featured video ${_id}:`, error);
+      return undefined;
+    }
+  },
+
+  create: async (data: { title: string; youtubeUrl: string; order?: number }) => {
+    const response = await fetchAPI<APIResponse<FeaturedVideo>>('/api/featured-videos', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  },
+
+  update: async (_id: string, data: { title?: string; youtubeUrl?: string; order?: number }) => {
+    if (!_id) throw new Error('Featured video ID is required');
+    const response = await fetchAPI<APIResponse<FeaturedVideo>>(`/api/featured-videos/${_id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  },
+
+  delete: async (_id: string) => {
+    if (!_id) throw new Error('Featured video ID is required');
+    await fetchAPI<APIResponse<void>>(`/api/featured-videos/${_id}`, { method: 'DELETE' });
   },
 };
 

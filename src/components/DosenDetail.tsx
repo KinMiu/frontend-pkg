@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, BookOpen, GraduationCap, User, File as FileIcon, ChevronDown, ChevronUp, ExternalLink, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Faculty } from '../types';
+import { formatFacultyPositionDisplay } from '../utils/facultyPosition';
 import { useCampusData } from '../dashboardadmin/contexts/CampusDataContext';
 
 interface DosenDetailProps {
@@ -78,7 +79,7 @@ const DosenDetail = ({ dosen, onClose }: DosenDetailProps) => {
         className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-lg"
       >
         <div className="sticky top-0 z-10 bg-white border-b px-6 py-4 flex justify-between items-center rounded-t-2xl">
-          <h2 className="text-2xl font-semibold text-gray-900">Profil Guru</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Profil</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <X className="h-5 w-5 text-gray-500" />
           </button>
@@ -111,7 +112,9 @@ const DosenDetail = ({ dosen, onClose }: DosenDetailProps) => {
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-3 mb-2 justify-center md:justify-start">
                   <h3 className="text-2xl md:text-3xl font-bold text-center md:text-left">{dosen.name}</h3>
-                  <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-medium">Guru</span>
+                  <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-medium">
+                    {formatFacultyPositionDisplay(dosen.position)}
+                  </span>
                 </div>
                  {dosen.jenisKelamin && (
                   <div className="flex items-center gap-2 text-sm">

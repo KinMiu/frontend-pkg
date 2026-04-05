@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import ConfirmationDialog from '../../components/shared/ConfirmationDialog';
 import { facultyImportAPI } from '../../../services/api';
 import * as XLSX from 'xlsx';
+import { formatFacultyPositionDisplay } from '../../../utils/facultyPosition';
 
 const FacultyList: React.FC = () => {
   const { faculty, deleteFaculty, refreshData, hideEmployeeDocsPublic, setHideEmployeeDocsPublic } = useCampusData();
@@ -482,7 +483,9 @@ const FacultyList: React.FC = () => {
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                       {faculty.nuptk || (faculty as { nik?: string }).nik || '-'}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{faculty.position || 'Guru'}</td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {formatFacultyPositionDisplay(faculty.position)}
+                    </td>
                     <td className="whitespace-nowrap px-6 py-4 text-center text-sm font-medium">
                       <div className="flex justify-center space-x-3">
                         <Link to={`/dashboard/faculty/${faculty._id}`} className="text-blue-600 hover:text-blue-900" title="Lihat Detail">

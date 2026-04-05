@@ -2,6 +2,13 @@
 export interface User {
   username: string;
   role: 'admin' | 'dosen' | 'pendaftaran' | 'operator';
+  /** Role login tetap dosen; ini label posisi dari data guru (PENDIDIK, dll). */
+  facultyPosition?: string;
+  facultyId?: string;
+  nuptk?: string;
+  name?: string;
+  operatorId?: string;
+  satminkal?: string;
 }
 // -------- Faculty Related Types --------
 
@@ -133,6 +140,16 @@ export interface Statistik {
   _id: string;
   name: string;
   value: string;
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// -------- Featured video (YouTube) --------
+export interface FeaturedVideo {
+  _id: string;
+  title: string;
+  youtubeUrl: string;
   order?: number;
   createdAt?: string;
   updatedAt?: string;

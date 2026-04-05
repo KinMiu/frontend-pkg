@@ -3,6 +3,7 @@ import { facultyAPI } from '../services/api';
 import { Faculty } from '../types';
 import DosenDetail from '../components/DosenDetail';
 import { BookOpen, GraduationCap, UserCircle } from 'lucide-react';
+import { formatFacultyPositionDisplay } from '../utils/facultyPosition';
 
 const ProfileCover: React.FC<{ src?: string; alt: string }> = ({ src, alt }) => {
   const [error, setError] = useState(false);
@@ -123,7 +124,9 @@ const Dosen: React.FC = () => {
                   <div className="font-bold text-2xl text-white drop-shadow mb-1">{dosen.name}</div>
                   <div className="text-white/90 text-base font-medium flex items-center gap-2 mb-1">
                     <GraduationCap className="h-5 w-5 inline-block text-white/80" />
-                    {lastEdu ? `${lastEdu.degree}${lastEdu.institution ? ' ' + lastEdu.institution : ''}` : dosen.position || '-'}
+                    {lastEdu
+                      ? `${lastEdu.degree}${lastEdu.institution ? ' ' + lastEdu.institution : ''}`
+                      : formatFacultyPositionDisplay(dosen.position)}
                   </div>
                 </div>
               </div>

@@ -2,9 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { User2, Pencil, LayoutDashboard } from 'lucide-react';
+import type { User } from '../../types';
+import { normalizeFacultyPosition } from '../../../utils/facultyPosition';
 
 const DosenDashboard: React.FC = () => {
   const { user } = useAuth();
+  const u = user as User | null;
+  const posLabel = normalizeFacultyPosition(u?.facultyPosition);
 
   return (
     <div className="space-y-6">
@@ -14,9 +18,12 @@ const DosenDashboard: React.FC = () => {
             <LayoutDashboard size={22} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard Guru</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Beranda</h1>
             <p className="text-sm text-gray-600">
-              Login sebagai <span className="font-medium">{(user as any)?.nuptk || user?.username}</span>
+              <span className="font-medium text-gray-900">{posLabel}</span>
+              <span className="text-gray-400"> · </span>
+              NUPTK/NIK{' '}
+              <span className="font-medium">{(u?.nuptk || user?.username || '').trim()}</span>
             </p>
           </div>
         </div>
@@ -32,9 +39,9 @@ const DosenDashboard: React.FC = () => {
               <User2 size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Detail Guru</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Profil</h2>
               <p className="mt-1 text-sm text-gray-600">
-                Lihat data profil Guru Anda.
+                Lihat data profil dan dokumen Anda.
               </p>
             </div>
           </div>
@@ -51,7 +58,7 @@ const DosenDashboard: React.FC = () => {
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Edit Data</h2>
               <p className="mt-1 text-sm text-gray-600">
-                Ubah data guru Anda sendiri.
+                Ubah data profil Anda sendiri.
               </p>
             </div>
           </div>

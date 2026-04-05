@@ -16,7 +16,8 @@ type ResetRequest = {
   decidedBy?: string | null;
 };
 
-const roleLabel = (r: ResetRequest['role']) => (r === 'dosen' ? 'Guru' : 'Operator');
+const roleLabel = (r: ResetRequest['role']) =>
+  r === 'dosen' ? 'Pengguna NUPTK/NIK' : 'Operator';
 
 const ResetPasswordApprovals: React.FC = () => {
   const { user } = useAuth();

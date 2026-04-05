@@ -3,6 +3,8 @@ import { useCampusData } from '../contexts/CampusDataContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Users, Award, Building, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import type { User } from '../types';
+import { normalizeFacultyPosition } from '../../utils/facultyPosition';
 
 const Dashboard: React.FC = () => {
   const { faculty, achievements, events, partners } = useCampusData();
@@ -138,14 +140,16 @@ const Dashboard: React.FC = () => {
   }
 
   if (user?.role === 'dosen') {
+    const pos = normalizeFacultyPosition((user as User).facultyPosition);
     return (
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Guru</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Beranda</h1>
+        <p className="text-sm text-gray-600 mb-6">{pos}</p>
         
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white rounded-lg shadow-md">
             <div className="p-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Data Guru</h2>
+              <h2 className="text-lg font-medium text-gray-900">Data guru</h2>
             </div>
             <div className="p-4">
               <ul className="divide-y divide-gray-200">

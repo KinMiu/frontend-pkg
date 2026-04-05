@@ -7,6 +7,8 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<string | false>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
   changeAdminUsername: (currentPassword: string, newUsername: string) => Promise<boolean>;
+  /** Gabungkan field ke user yang sedang login (mis. setelah edit profil). */
+  patchUser: (fields: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -54,11 +56,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const data = await authAPI.loginDosen(identifier, password);
-      const userData: User & { facultyId?: string; nuptk?: string } = {
+      const userData: User = {
         username: identifier,
         role: 'dosen',
         facultyId: data.facultyId,
         nuptk: data.nuptk || identifier,
+        name: data.name,
+        facultyPosition: data.position,
       };
       setUser(userData);
       return 'dosen';
@@ -136,13 +140,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const patchUser = (fields: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...fields } : null));
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, changePassword, changeAdminUsername, logout }}>
+    <AuthContext.Provider value={{ user, login, changePassword, changeAdminUsername, patchUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { Faculty, EmployeeDocument, Education } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { compressImageFile } from '../../../utils/imageCompression';
+import { FACULTY_POSITION_OPTIONS, normalizeFacultyPosition } from '../../../utils/facultyPosition';
 
 const emptyFaculty: Faculty = {
   _id: '',
@@ -15,7 +16,7 @@ const emptyFaculty: Faculty = {
   nip: '',
   nrg: '',
   satminkal: '',
-  position: 'Guru',
+  position: 'PENDIDIK',
   foto: '',
   education: [],
   courses: [],
@@ -94,7 +95,7 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addFaculty, updateFaculty, getFacultyById, faculty, operators } = useCampusData();
-  const { user } = useAuth();
+  const { user, patchUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [facultyData, setFacultyData] = useState<Faculty>(emptyFaculty);
@@ -159,7 +160,10 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
               navigate(basePath);
               return;
             }
-            setFacultyData({ ...existingFaculty, position: 'Guru' });
+            setFacultyData({
+              ...existingFaculty,
+              position: normalizeFacultyPosition(existingFaculty.position),
+            });
             if (existingFaculty.foto) {
               const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3008').replace(/\/+$/, '');
               const src =
@@ -359,7 +363,10 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
       return;
     }
   
-    const submittedData = { ...facultyData, position: 'Guru' };
+    const submittedData = {
+      ...facultyData,
+      position: normalizeFacultyPosition(facultyData.position),
+    };
     if (isOperator && operatorSatminkal) {
       submittedData.satminkal = operatorSatminkal;
     }
@@ -403,6 +410,12 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
       if (isEditing && effectiveId) {
         await updateFaculty(effectiveId, formData);
         toast.success('Data guru berhasil diperbarui');
+        if (isDosenSelf) {
+          patchUser({
+            facultyPosition: submittedData.position,
+            name: submittedData.name,
+          });
+        }
       } else {
         if (isDosenSelf) {
           toast.error('Akun guru tidak diizinkan menambahkan data guru baru');
@@ -620,17 +633,24 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ facultyIdOverride, basePath =
                 </div>
                 <div>
                   <label htmlFor="position" className="block text-sm font-medium text-gray-700">
-                    Posisi
+                    Posisi <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="position"
                     name="position"
-                    value="Guru"
-                    readOnly
-                    disabled
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-gray-100 cursor-not-allowed"
-                  />
+                    value={normalizeFacultyPosition(facultyData.position)}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    {FACULTY_POSITION_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Login akun tetap memakai NUPTK/NIK; label di dashboard mengikuti posisi ini.
+                  </p>
                 </div>
               </div>
             </div>

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { facultyAPI } from '../../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCampusData } from '../../contexts/CampusDataContext';
+import { formatFacultyPositionDisplay } from '../../../utils/facultyPosition';
 
 const EMPLOYEE_DOC_CATEGORIES: { key: string; label: string }[] = [
   { key: 'identitasPegawai', label: 'Identitas Pegawai' },
@@ -126,7 +127,9 @@ const FacultyDetail: React.FC<FacultyDetailProps> = ({ facultyIdOverride, basePa
           <Link to={basePath} className="mr-4 text-gray-500 hover:text-gray-700">
             <ArrowLeft size={20} />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Detail Guru</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isDosenSelf ? 'Profil' : 'Detail data guru'}
+          </h1>
         </div>
         {canManage && (
           <div className="flex space-x-2">
@@ -152,7 +155,9 @@ const FacultyDetail: React.FC<FacultyDetailProps> = ({ facultyIdOverride, basePa
         <div className="md:col-span-2">
           <div className="rounded-lg bg-white shadow-md">
             <div className="border-b border-gray-200 px-6 py-4">
-              <h2 className="text-lg font-medium text-gray-900">Informasi Guru</h2>
+              <h2 className="text-lg font-medium text-gray-900">
+                {isDosenSelf ? 'Informasi profil' : 'Informasi guru'}
+              </h2>
             </div>
             <div className="p-6">
               <div className="flex items-center mb-6">
@@ -191,7 +196,7 @@ const FacultyDetail: React.FC<FacultyDetailProps> = ({ facultyIdOverride, basePa
                 })()}
                 <div className="ml-4">
                   <h3 className="text-xl font-semibold text-gray-900">{faculty.name}</h3>
-                  <p className="text-sm text-gray-600">{faculty.position || 'Guru'}</p>
+                  <p className="text-sm text-gray-600">{formatFacultyPositionDisplay(faculty.position)}</p>
                 </div>
               </div>
 
@@ -228,7 +233,7 @@ const FacultyDetail: React.FC<FacultyDetailProps> = ({ facultyIdOverride, basePa
                 )}
                 <div>
                   <p className="text-sm font-medium text-gray-500">Posisi</p>
-                  <p className="text-gray-900">{faculty.position || 'Guru'}</p>
+                  <p className="text-gray-900">{formatFacultyPositionDisplay(faculty.position)}</p>
                 </div>
               </div>
 

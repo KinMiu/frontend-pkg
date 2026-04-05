@@ -166,6 +166,8 @@ const BannerForm: React.FC = () => {
       navigate('/dashboard/banners');
     } catch (err) {
       toast.error('Terjadi kesalahan saat menyimpan banner');
+    } finally {
+      setShowSaveConfirm(false);
     }
   };
 

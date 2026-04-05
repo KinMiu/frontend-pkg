@@ -15,7 +15,8 @@ import {
   FileText,
   KeyRound,
   X,
-  Settings
+  Settings,
+  Youtube,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { authAPI } from '../../../services/api';
@@ -128,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 </NavLink>
                 <NavLink to="/dashboard/guru/profil" className={navLinkClass}>
                   <Users size={20} />
-                  <span>Detail Guru</span>
+                  <span>Profil</span>
                 </NavLink>
                 <NavLink to="/dashboard/guru/edit" className={navLinkClass}>
                   <FileText size={20} />
@@ -234,6 +235,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 <NavLink to="/dashboard/partners" className={navLinkClass}>
                   <Building size={20} />
                   <span>Link Partner</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/featured-videos" className={navLinkClass}>
+                  <Youtube size={20} />
+                  <span>Link Video</span>
                 </NavLink>
                 
                 {/* <NavLink to="/dashboard/testimonials" className={navLinkClass}>

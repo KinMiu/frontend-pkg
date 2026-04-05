@@ -98,6 +98,15 @@ export interface Statistik {
   updatedAt?: string;
 }
 
+export interface FeaturedVideo {
+  _id: string;
+  title: string;
+  youtubeUrl: string;
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Testimonial {
   _id: string;
   name: string;

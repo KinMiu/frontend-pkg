@@ -19,6 +19,7 @@ import PengumumanList from '../../pages/pengumuman/PengumumanList';
 import PengumumanDetail from '../../pages/pengumuman/PengumumanDetail';
 import PengumumanForm from '../../pages/pengumuman/PengumumanForm';
 import StatistikList from '../../pages/statistik/StatistikList';
+import FeaturedVideoList from '../../pages/featuredVideos/FeaturedVideoList';
 import PartnerList from '../../pages/partners/PartnerList';
 import PartnerForm from '../../pages/partners/PartnerForm';
 import TestimonialList from '../../pages/testimonials/TestimonialList';
@@ -102,6 +103,9 @@ const Layout: React.FC = () => {
 
               {/* Data Statistik: /dashboard/statistik (admin only) */}
               <Route path="statistik" element={<StatistikList />} />
+
+              {/* Link video YouTube: /dashboard/featured-videos */}
+              <Route path="featured-videos" element={<FeaturedVideoList />} />
 
               {/* Facility Routes: /dashboard/facilities/... */}
               <Route path="facilities" element={<FacilityList />} />

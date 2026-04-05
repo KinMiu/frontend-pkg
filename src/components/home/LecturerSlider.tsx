@@ -4,6 +4,7 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import { BookOpen, GraduationCap, MapPin, UserCircle } from 'lucide-react';
 import { usePublicCampusData } from '../../contexts/PublicCampusDataContext';
 import { Faculty } from '../../types';
+import { formatFacultyPositionDisplay } from '../../utils/facultyPosition';
 import DosenDetail from '../DosenDetail';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -89,7 +90,7 @@ const LecturerSlider: React.FC = () => {
                   <h3 className="text-xl font-extrabold text-gray-900 text-center mb-1 group-hover:text-blue-700 transition-colors">{lecturer.name}</h3>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold mb-2">
                     <BookOpen size={16} className="text-blue-500" />
-                    {lecturer.position || 'Guru'}
+                    {formatFacultyPositionDisplay(lecturer.position)}
                   </span>
                   <div className="w-12 border-b-2 border-blue-100 mb-2" />
                   <div className="w-full flex flex-col divide-y divide-gray-100 bg-gray-50 rounded-xl shadow-sm mt-2">

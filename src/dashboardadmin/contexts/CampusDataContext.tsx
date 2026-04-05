@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Faculty, Achievement, Event, Pengumuman, Partner, Statistik, Testimonial, Greeting, HKI, Patent, IndustrialDesign, RPS, Surat, Facility, Kurikulum, Banner, Program, Structural, PerangkatAjar } from '../types';
-import { facultyAPI, achievementAPI, eventAPI, k3spEventAPI, pengumumanAPI, partnerAPI, statistikAPI, testimonialAPI, greetingAPI, hkiAPI, patentAPI, industrialDesignAPI, rpsAPI, suratAPI, perangkatAjarAPI, facilityAPI, kurikulumAPI, bannerAPI, programAPI, structuralAPI, operatorAPI } from '../../services/api';
+import { Faculty, Achievement, Event, Pengumuman, Partner, Statistik, FeaturedVideo, Testimonial, Greeting, HKI, Patent, IndustrialDesign, RPS, Surat, Facility, Kurikulum, Banner, Program, Structural, PerangkatAjar } from '../types';
+import { facultyAPI, achievementAPI, eventAPI, k3spEventAPI, pengumumanAPI, partnerAPI, statistikAPI, featuredVideoAPI, testimonialAPI, greetingAPI, hkiAPI, patentAPI, industrialDesignAPI, rpsAPI, suratAPI, perangkatAjarAPI, facilityAPI, kurikulumAPI, bannerAPI, programAPI, structuralAPI, operatorAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface CampusDataContextType {
@@ -12,6 +12,7 @@ interface CampusDataContextType {
   pengumuman: Pengumuman[];
   statistics: Statistik[];
   partners: Partner[];
+  featuredVideos: FeaturedVideo[];
   testimonials: Testimonial[];
   greetings: Greeting[];
   hki: HKI[];
@@ -63,6 +64,10 @@ interface CampusDataContextType {
   updatePartner: (id: string, data: any) => Promise<void>;
   deletePartner: (id: string) => Promise<void>;
   getPartnerById: (id: string) => Promise<Partner | undefined>;
+
+  addFeaturedVideo: (data: { title: string; youtubeUrl: string; order?: number }) => Promise<void>;
+  updateFeaturedVideo: (id: string, data: { title?: string; youtubeUrl?: string; order?: number }) => Promise<void>;
+  deleteFeaturedVideo: (id: string) => Promise<void>;
 
   addTestimonial: (data: any) => Promise<void>;
   updateTestimonial: (id: string, data: any) => Promise<void>;
@@ -161,6 +166,7 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
   const [statistics, setStatistics] = useState<Statistik[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [featuredVideos, setFeaturedVideos] = useState<FeaturedVideo[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [greetings, setGreetings] = useState<Greeting[]>([]);
   const [hki, setHKI] = useState<HKI[]>([]);
@@ -189,6 +195,7 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         pengumumanData,
         statisticsData,
         partnersData,
+        featuredVideosData,
         testimonialsData,
         greetingsData,
         hkiData,
@@ -211,6 +218,7 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         pengumumanAPI.getAll(),
         statistikAPI.getAll(),
         partnerAPI.getAll(),
+        featuredVideoAPI.getAll(),
         testimonialAPI.getAll(),
         greetingAPI.getAll(),
         hkiAPI.getAll(),
@@ -233,6 +241,7 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setPengumuman(pengumumanData);
       setStatistics(statisticsData);
       setPartners(partnersData);
+      setFeaturedVideos(featuredVideosData);
       setTestimonials(testimonialsData);
       setGreetings(greetingsData);
       setHKI(hkiData);
@@ -570,6 +579,39 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return await partnerAPI.getById(id);
     } catch (err) {
       toast.error('Failed to get partner details');
+      throw err;
+    }
+  };
+
+  const addFeaturedVideo = async (data: { title: string; youtubeUrl: string; order?: number }) => {
+    try {
+      await featuredVideoAPI.create(data);
+      await fetchData();
+    } catch (err) {
+      toast.error('Gagal menambah video');
+      throw err;
+    }
+  };
+
+  const updateFeaturedVideo = async (
+    id: string,
+    data: { title?: string; youtubeUrl?: string; order?: number }
+  ) => {
+    try {
+      await featuredVideoAPI.update(id, data);
+      await fetchData();
+    } catch (err) {
+      toast.error('Gagal memperbarui video');
+      throw err;
+    }
+  };
+
+  const deleteFeaturedVideo = async (id: string) => {
+    try {
+      await featuredVideoAPI.delete(id);
+      await fetchData();
+    } catch (err) {
+      toast.error('Gagal menghapus video');
       throw err;
     }
   };
@@ -1143,6 +1185,7 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     pengumuman,
     statistics,
     partners,
+    featuredVideos,
     testimonials,
     greetings,
     hki,
@@ -1189,6 +1232,9 @@ export const CampusDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     updatePartner,
     deletePartner,
     getPartnerById,
+    addFeaturedVideo,
+    updateFeaturedVideo,
+    deleteFeaturedVideo,
     addTestimonial,
     updateTestimonial,
     deleteTestimonial,

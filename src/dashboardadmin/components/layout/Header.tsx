@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import ConfirmationDialog from '../shared/ConfirmationDialog';
 import { useTheme } from '../../contexts/ThemeContext';
 import { facultyAPI, operatorAPI } from '../../../services/api';
+import { normalizeFacultyPosition } from '../../../utils/facultyPosition';
+import type { User } from '../../types';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -28,15 +30,17 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     return `${baseUrl}/uploads/${value}`;
   };
 
-  const roleLabel = (role?: string) => {
+  const roleLabel = (role?: string, u?: User | null) => {
     if (role === 'admin') return 'Admin';
     if (role === 'pendaftaran') return 'Pendaftaran';
     if (role === 'operator') return 'Operator';
-    return 'Guru';
+    if (role === 'dosen') return u?.facultyPosition || 'PENDIDIK';
+    return 'Pengguna';
   };
 
   const [avatarSrc, setAvatarSrc] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
+  const [dosenFooterLine, setDosenFooterLine] = useState<string>('');
 
   useEffect(() => {
     let cancelled = false;
@@ -45,20 +49,29 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
       if (!user) {
         setAvatarSrc('');
         setDisplayName('');
+        setDosenFooterLine('');
         return;
       }
 
       try {
         if (user.role === 'dosen') {
-          const facultyId = (user as { facultyId?: string }).facultyId;
+          const facultyId = (user as User).facultyId;
           if (facultyId) {
             const faculty = await facultyAPI.getById(facultyId);
             if (cancelled) return;
 
             setDisplayName(faculty?.name || user.username);
             setAvatarSrc(resolveUploadUrl(faculty?.foto));
+            const pos = normalizeFacultyPosition(faculty?.position);
+            const nk = (user as User).nuptk || user.username;
+            setDosenFooterLine(`${pos} · NUPTK ${nk}`);
             return;
           }
+          setDisplayName((user as User).name || user.username);
+          setAvatarSrc('');
+          const posFallback = normalizeFacultyPosition((user as User).facultyPosition);
+          setDosenFooterLine(`${posFallback} · NUPTK ${(user as User).nuptk || user.username}`);
+          return;
         }
 
         if (user.role === 'operator') {
@@ -75,6 +88,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
 
             setDisplayName(name);
             setAvatarSrc(resolveUploadUrl((operator as { foto?: string } | null)?.foto));
+            setDosenFooterLine('');
             return;
           }
         }
@@ -82,10 +96,12 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
         // Fallback: hanya pakai username
         setDisplayName(user.username);
         setAvatarSrc('');
+        setDosenFooterLine('');
       } catch (e) {
         if (cancelled) return;
         setDisplayName(user.username);
         setAvatarSrc('');
+        setDosenFooterLine('');
       }
     };
 
@@ -137,13 +153,14 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               </div>
               <div className="ml-2 hidden sm:block">
                 <p className="text-sm font-medium">
-                  {displayName || roleLabel(user?.role)}
+                  {displayName || roleLabel(user?.role, user as User | null)}
                 </p>
                 <p className="text-xs opacity-80">
                   {user?.role === 'operator'
-                    ? (user as { satminkal?: string }).satminkal || user?.username
+                    ? (user as User).satminkal || user?.username
                     : user?.role === 'dosen'
-                      ? (user as { nuptk?: string }).nuptk || user?.username
+                      ? dosenFooterLine ||
+                        `${(user as User).facultyPosition || 'PENDIDIK'} · NUPTK ${(user as User).nuptk || user.username}`
                       : user?.username}
                 </p>
               </div>
